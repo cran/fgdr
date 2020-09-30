@@ -3,8 +3,7 @@
 
 # fgdr <img src="man/figures/logo.png" align="right" width="120px" />
 
-(Sorry, English version of README is not availavle for
-now.)
+(Sorry, English version of README is not availavle for now.)
 
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/fgdr)](https://cran.r-project.org/package=fgdr)
 [![CRAN RStudio mirror
@@ -45,15 +44,13 @@ fgdrパッケージを使った、基盤地図情報データの読み込み方�
 このパッケージには、基盤地図情報データダウロードサービスが提供している
 
   - 基本項目
-  - 数値標高モデル (5m,
-10mメッシュ)
+  - 数値標高モデル (5m, 10mメッシュ)
 
-について、データフレーム、Rの地理空間データを扱うためのクラスである[sf](https://CRAN.R-project.org/package=sf)または[raster](https://CRAN.R-project.org/package=raster)
-([stars](https://github.com/r-spatial/stars))として返却する関数が備わっています。
+について、データフレーム、Rの地理空間データを扱うためのクラスである[sf](https://CRAN.R-project.org/package=sf)または[raster](https://CRAN.R-project.org/package=raster)、[stars](https://CRAN.R-project.org/package=stars)、[terra](https://CRAN.R-project.org/package=terra)として返却する関数が備わっています。
 
 ``` r
 library(fgdr)
-library(raster)
+library(terra)
 library(sf)
 ```
 
@@ -70,7 +67,7 @@ read_fgd("FG-GML-523346-AdmPt-20180701-0001.xml")
     #> geometry type:  POINT
     #> dimension:      XY
     #> bbox:           xmin: 133.7835 ymin: 35.00697 xmax: 133.8736 ymax: 35.06013
-    #> CRS:            EPSG:6668
+    #> geographic CRS: JGD2011
     #> # A tibble: 4 x 9
     #>   gml_id type  name  adm_code life_span_from development_date org_gi_level
     #>   <chr>  <chr> <chr> <chr>    <date>         <date>                  <int>
@@ -90,7 +87,7 @@ read_fgd("FG-GML-523346-AdmArea-20180701-0001.xml")
     #> geometry type:  POLYGON
     #> dimension:      XY
     #> bbox:           xmin: 133.75 ymin: 35 xmax: 133.875 ymax: 35.08333
-    #> CRS:            EPSG:6668
+    #> geographic CRS: JGD2011
     #> # A tibble: 4 x 9
     #>   gml_id type  name  adm_code life_span_from development_date org_gi_level
     #>   <chr>  <chr> <chr> <chr>    <date>         <date>                  <int>
@@ -109,32 +106,31 @@ read_fgd("FG-GML-523346-AdmArea-20180701-0001.xml")
 
 ``` r
 read_fgd_dem("FG-GML-5135-63-00-DEM5A-20161001.xml", 
-             resolution = 5)
+             resolution = 5,
+             return_class = "data.table")
 ```
 
-    #> # A tibble: 33,750 x 2
-    #>    type       value
-    #>    <chr>      <dbl>
-    #>  1 データなし    NA
-    #>  2 データなし    NA
-    #>  3 データなし    NA
-    #>  4 データなし    NA
-    #>  5 データなし    NA
-    #>  6 データなし    NA
-    #>  7 データなし    NA
-    #>  8 データなし    NA
-    #>  9 データなし    NA
-    #> 10 データなし    NA
-    #> # … with 33,740 more rows
+    #>              type     value
+    #>     1: データなし    NA [m]
+    #>     2: データなし    NA [m]
+    #>     3: データなし    NA [m]
+    #>     4: データなし    NA [m]
+    #>     5: データなし    NA [m]
+    #>    ---                     
+    #> 33746:     内水面 -9999 [m]
+    #> 33747:     内水面 -9999 [m]
+    #> 33748:     内水面 -9999 [m]
+    #> 33749:     内水面 -9999 [m]
+    #> 33750:     内水面 -9999 [m]
 
 デフォルトでは返り値のオブジェクトがデータフレームですが、これは引数`return_class
-=`によりrasterを選ぶことも可能です。rasterとして読み込み、可視化する例を示します。
+=`によりrasterやstars、terraのいずれかを選ぶことも可能です。terraとして読み込み、可視化する例を示します。
 
 ``` r
 r <- 
   read_fgd_dem("FG-GML-5135-63-00-DEM5A-20161001.xml", 
              resolution = 5,
-             return_class = "raster")
+             return_class = "terra")
 ```
 
 ``` r
